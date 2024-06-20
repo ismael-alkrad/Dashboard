@@ -32,12 +32,18 @@ interface PostEditPageProps {
     params: {
         id: string;
     }
+    post: {
+        id: string;
+        title: string;
+        body: string;
+        author: string;
+        date: string;
+    } | null;
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    // Assuming `posts` is an array of objects with `id` as a key
     const paths = posts.map(post => ({
-        params: { id: post.id.toString() }  // Ensure id is converted to string if necessary
+        params: { id: post.id.toString() }
     }));
 
     return { paths, fallback: false };
@@ -49,15 +55,18 @@ export const getStaticProps: GetStaticProps<PostEditPageProps> = async ({ params
     return {
         props: {
             params: {
-                id: params?.id as string // Cast to string if necessary
+                id: params?.id as string
             },
-            post
+            post: post ?? null
         }
     };
 };
 
-const PostEditPage = ({ params }: PostEditPageProps) => {
-    const post = posts.find((post) => post.id === params.id);
+const PostEditPage = ({ post }: PostEditPageProps) => {
+    if (!post) {
+        return <p>Post not found</p>;
+    }
+    // const post = posts.find((post) => post.id === params.id);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
