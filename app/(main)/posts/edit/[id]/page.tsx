@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import moment from "moment";
-import { GetStaticPaths, GetStaticProps } from 'next';
 
 
 const FormSchema = z.object({
@@ -32,41 +31,10 @@ interface PostEditPageProps {
     params: {
         id: string;
     }
-    post: {
-        id: string;
-        title: string;
-        body: string;
-        author: string;
-        date: string;
-    } | null;
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-    const paths = posts.map(post => ({
-        params: { id: post.id.toString() }
-    }));
-
-    return { paths, fallback: false };
-};
-
-export const getStaticProps: GetStaticProps<PostEditPageProps> = async ({ params }) => {
-    const post = posts.find(post => post.id === params?.id);
-
-    return {
-        props: {
-            params: {
-                id: params?.id as string
-            },
-            post: post ?? null
-        }
-    };
-};
-
-const PostEditPage = ({ post }: PostEditPageProps) => {
-    if (!post) {
-        return <p>Post not found</p>;
-    }
-    // const post = posts.find((post) => post.id === params.id);
+const PostEditPage = ({ params }: PostEditPageProps) => {
+    const post = posts.find((post) => post.id === params.id);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
